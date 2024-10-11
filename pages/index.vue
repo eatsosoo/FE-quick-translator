@@ -20,7 +20,7 @@
     </div>
 
     <p>Selected text: "{{ selectedText }}"</p>
-    <!-- <Button @click="highlightText" class="mb-2">Highlight Selected Text</Button> -->
+    <!-- <Button @click="translate" class="mb-2">Translate</Button> -->
   </div>
 </template>
 
@@ -44,6 +44,11 @@ const getSelection = () => {
   const end = textarea.selectionEnd;
 
   selectedText.value = textarea.value.substring(start, end);
+};
+
+const translate = async () => {
+  const response = await sendMessageToChatGPT(selectedText.value);
+  translateText.value = response;
 };
 
 const highlightedText = computed(() => {
