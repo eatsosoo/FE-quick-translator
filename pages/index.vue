@@ -1,13 +1,62 @@
 <template>
-    <div>
-        <h1>Hello</h1>
+  <div>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <div><p>Chinese</p></div>
+        <textarea
+          v-model="text"
+          ref="textAreaRef"
+          class="border p-2 w-full"
+          @mouseup="getSelection"
+          @input="translateText = text"
+        ></textarea>
+      </div>
+      <div>
+        <div><p>Vietnamese</p></div>
+        <div class="border p-2 min-h-[150px]">
+          <p v-html="highlightedText"></p>
+        </div>
+      </div>
     </div>
+
+    <p>Selected text: "{{ selectedText }}"</p>
+    <!-- <Button @click="highlightText" class="mb-2">Highlight Selected Text</Button> -->
+  </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-    title: 'Home',
-    description: 'The home page',
-    layout: 'default',
-})
+  title: "Highlight Selected Text",
+  description:
+    "Highlight selected text in a textarea using Vue 3 Composition API",
+  layout: "default",
+});
+import { ref } from "vue";
+
+const text = ref("");
+const translateText = ref("");
+const selectedText = ref("");
+const textAreaRef = ref<any>(null);
+
+const getSelection = () => {
+  const textarea = textAreaRef.value;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  selectedText.value = textarea.value.substring(start, end);
+};
+
+const highlightedText = computed(() => {
+  if (!selectedText.value) {
+    return translateText.value;
+  }
+  const regex = new RegExp(`(${selectedText.value})`, "gi");
+  return translateText.value.replace(regex, "<mark>$1</mark>");
+});
 </script>
+
+<style scoped lang="scss">
+textarea {
+  height: 150px;
+}
+</style>
