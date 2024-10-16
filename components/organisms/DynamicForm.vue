@@ -48,23 +48,23 @@ const components: Record<RowType, any> = {
 </script>
 
 <template>
-  <form class="space-y-6" @submit="onSubmit">
-      <FormField
-        v-for="row in data?.structure.rows"
-        v-slot="{ componentField }"
-        :name="row.name"
-      >
-        <FormItem class="mb-4">
-          <FormLabel>{{ row.label }}</FormLabel>
-          <FormControl>
-            <component :is="components[row.rowType]" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
+  <form @submit="onSubmit">
+    <FormField
+      v-for="row in data?.structure.rows"
+      v-slot="{ componentField }"
+      :name="row.name"
+    >
+      <FormItem class="mb-4">
+        <FormLabel>{{ row.label }}</FormLabel>
+        <FormControl>
+          <component :is="components[row.rowType]" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
 
-      <template v-if="data?.structure.bottomSlotName">
-        <slot :name="data?.structure.bottomSlotName"></slot>
-      </template>
+    <template v-if="data?.structure.bottomSlotName">
+      <slot :name="data?.structure.bottomSlotName"></slot>
+    </template>
   </form>
 </template>

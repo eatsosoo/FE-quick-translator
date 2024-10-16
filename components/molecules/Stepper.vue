@@ -35,7 +35,7 @@ const formSchema = [
     },
   ),
   z.object({
-    favoriteDrink: z.union([z.literal('coffee'), z.literal('tea'), z.literal('soda')]),
+    favoriteGenre: z.union([z.literal('coffee'), z.literal('tea'), z.literal('soda')]),
   }),
 ]
 
@@ -64,6 +64,8 @@ function onSubmit(values: any) {
     description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
   })
 }
+
+const genres = ['Fantasy', 'Science Fiction', 'Horror', 'Romance', 'Mystery', 'Thriller', 'Western', 'Dystopian', 'Memoir', 'Biography', 'Self-help', 'Cookbook', 'History', 'Travel', 'Guide', 'Science', 'Math', 'Poetry', 'Art', 'Graphic Novel', 'Other']
 </script>
 
 <template>
@@ -128,31 +130,21 @@ function onSubmit(values: any) {
 
         <div class="flex flex-col gap-4 mt-4">
           <template v-if="stepIndex === 1">
+            <FormField v-slot="{ componentField }" name="fullName">
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input type="text" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
             <FormField v-slot="{ componentField }" name="email">
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="password">
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="confirm_password">
-              <FormItem>
-                <FormLabel>Confirm password</FormLabel>
-                <FormControl>
-                  <Input type="confirm_password" v-bind="componentField" />
+                  <Input type="email " v-bind="componentField" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -182,30 +174,13 @@ function onSubmit(values: any) {
           </template>
 
           <template v-if="stepIndex === 3">
-            <FormField v-slot="{ componentField }" name="favoriteDrink">
+            <FormField v-slot="{ componentField }" name="favoriteGenre">
               <FormItem>
-                <FormLabel>Drink</FormLabel>
+                <FormLabel>Genre</FormLabel>
 
-                <Select v-bind="componentField">
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a drink" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="coffee">
-                        Coffe
-                      </SelectItem>
-                      <SelectItem value="tea">
-                        Tea
-                      </SelectItem>
-                      <SelectItem value="soda">
-                        Soda
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <MultiSelect v-bind="componentField" :options="genres" />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>

@@ -49,12 +49,12 @@ const loginForm = $listForm.login;
   <UseLoginTemplate>
     <DynamicForm v-if="isLogin" :data="loginForm">
       <template #btnArea>
-        <p class="text-sm mb-1 hover:underline cursor-pointer">
+        <p class="text-sm hover:underline cursor-pointer">
           Forgot password?
         </p>
-        <div class="flex justify-between w-full">
+        <div class="flex justify-between w-full mt-2">
           <Button type="submit" @click="methods.login">{{ text.action }}</Button>
-          <Button variant="outline" @click="methods.switchForm">
+          <Button type="button" variant="outline" @click="methods.switchForm" >
             {{ text.switch }}
           </Button>
         </div>
@@ -63,22 +63,7 @@ const loginForm = $listForm.login;
   </UseLoginTemplate>
 
   <UseRegisterTemplate>
-    <form>
-      <div class="grid items-center w-full gap-4">
-        <div class="flex flex-col space-y-1.5">
-          <Label for="Email">Email</Label>
-          <Input id="email" />
-        </div>
-        <div class="flex flex-col space-y-1.5">
-          <Label for="password">Password</Label>
-          <Input id="password" />
-        </div>
-        <div class="flex flex-col space-y-1.5">
-          <Label for="confirm-password">Confirm Password</Label>
-          <Input id="confirm-password" />
-        </div>
-      </div>
-    </form>
+    <Stepper />
   </UseRegisterTemplate>
 
   <div class="login-page h-screen flex justify-center items-center">
@@ -87,10 +72,9 @@ const loginForm = $listForm.login;
         <CardTitle>{{ text.title }}</CardTitle>
         <CardDescription>Welcome to ...</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent :class="{ 'w-[40rem]': !isLogin }">
         <LoginForm v-if="isLogin" />
-        <!-- <RegisterForm v-else /> -->
-         <Stepper v-else />
+        <RegisterForm v-else/>
       </CardContent>
     </Card>
   </div>
