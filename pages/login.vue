@@ -38,25 +38,28 @@ const methods = {
     text.switch = isLogin.value ? "Sign Up" : "Sign In";
   },
   login: () => {
-    router.push("/");
+    // router.push("/");
   },
 };
+
+const loginForm = $listForm.login;
 </script>
 
 <template>
   <UseLoginTemplate>
-    <form>
-      <div class="grid items-center w-full gap-4">
-        <div class="flex flex-col space-y-1.5">
-          <Label for="Email">Email</Label>
-          <Input id="email" />
+    <DynamicForm v-if="isLogin" :data="loginForm">
+      <template #btnArea>
+        <p class="text-sm mb-1 hover:underline cursor-pointer">
+          Forgot password?
+        </p>
+        <div class="flex justify-between w-full">
+          <Button type="submit" @click="methods.login">{{ text.action }}</Button>
+          <Button variant="outline" @click="methods.switchForm">
+            {{ text.switch }}
+          </Button>
         </div>
-        <div class="flex flex-col space-y-1.5">
-          <Label for="password">Password</Label>
-          <Input id="password" />
-        </div>
-      </div>
-    </form>
+      </template>
+    </DynamicForm>
   </UseLoginTemplate>
 
   <UseRegisterTemplate>
@@ -79,26 +82,16 @@ const methods = {
   </UseRegisterTemplate>
 
   <div class="login-page h-screen flex justify-center items-center">
-    <Card class="w-[350px] shadow-lg transition duration-150 ease-in-out">
+    <Card class="min-w-[350px] shadow-lg transition duration-150 ease-in-out">
       <CardHeader>
         <CardTitle>{{ text.title }}</CardTitle>
         <CardDescription>Welcome to ...</CardDescription>
       </CardHeader>
       <CardContent>
         <LoginForm v-if="isLogin" />
-        <RegisterForm v-else />
+        <!-- <RegisterForm v-else /> -->
+         <Stepper v-else />
       </CardContent>
-      <CardFooter class="flex-col items-start px-6 pb-6">
-        <p class="text-sm mb-1 hover:underline cursor-pointer">
-          Forgot password?
-        </p>
-        <div class="flex justify-between w-full">
-          <Button @click="methods.login">{{ text.action }}</Button>
-          <Button variant="outline" @click="methods.switchForm">
-            {{ text.switch }}
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   </div>
 </template>
