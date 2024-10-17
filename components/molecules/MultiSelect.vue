@@ -1,33 +1,49 @@
 <script setup lang="ts">
-import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/ui/tags-input'
-import { ComboboxAnchor, ComboboxContent, ComboboxInput, ComboboxPortal, ComboboxRoot } from 'radix-vue'
-import { computed, ref } from 'vue'
+import {
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from "@/components/ui/tags-input";
+import {
+  ComboboxAnchor,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxPortal,
+  ComboboxRoot,
+} from "radix-vue";
+import { computed, ref } from "vue";
 
-defineProps({
-    options: {
-        type: Array as PropType<string[]>,
-        required: true,
-    },
-})
+const props = defineProps({
+  options: {
+    type: Array as PropType<{ value: string; label: string }[]>,
+    required: true,
+  },
+  placeholder: {
+    type: String,
+    default: "Select...",
+  },
+});
 
-const frameworks = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-  { value: 'nuxt', label: 'Nuxt' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' },
-]
+const items = props.options;
+const modelValue = ref<string[]>([]);
+const open = ref(false);
+const searchTerm = ref("");
 
-const modelValue = ref<string[]>([])
-const open = ref(false)
-const searchTerm = ref('')
-
-const filteredFrameworks = computed(() => frameworks.filter(i => !modelValue.value.includes(i.label)))
+const filteredItems = computed(() =>
+  items.filter((i) => !modelValue.value.includes(i.label))
+);
 </script>
 
 <template>
-  <TagsInput class="px-0 gap-0 w-80" :model-value="modelValue">
+  <TagsInput class="px-0 gap-0 w-80" :model-value="modelValue" @click="open = true">
     <div class="flex gap-2 flex-wrap items-center px-3">
       <TagsInputItem v-for="item in modelValue" :key="item" :value="item">
         <TagsInputItemText />
@@ -35,10 +51,19 @@ const filteredFrameworks = computed(() => frameworks.filter(i => !modelValue.val
       </TagsInputItem>
     </div>
 
-    <ComboboxRoot v-model="modelValue" v-model:open="open" v-model:search-term="searchTerm" class="w-full">
+    <ComboboxRoot
+      v-model="modelValue"
+      v-model:open="open"
+      v-model:search-term="searchTerm"
+      class="w-full"
+    >
       <ComboboxAnchor as-child>
-        <ComboboxInput placeholder="Framework..." as-child>
-          <TagsInputInput class="w-full px-3" :class="modelValue.length > 0 ? 'mt-2' : ''" @keydown.enter.prevent />
+        <ComboboxInput :placeholder="placeholder" as-child>
+          <TagsInputInput
+            class="w-full px-3"
+            :class="modelValue.length > 0 ? 'mt-2' : ''"
+            @keydown.enter.prevent
+          />
         </ComboboxInput>
       </ComboboxAnchor>
 
@@ -51,19 +76,23 @@ const filteredFrameworks = computed(() => frameworks.filter(i => !modelValue.val
             <CommandEmpty />
             <CommandGroup>
               <CommandItem
-                v-for="framework in filteredFrameworks" :key="framework.value" :value="framework.label"
-                @select.prevent="(ev) => {
-                  if (typeof ev.detail.value === 'string') {
-                    searchTerm = ''
-                    modelValue.push(ev.detail.value)
-                  }
+                v-for="item in filteredItems"
+                :key="item.value"
+                :value="item.label"
+                @select.prevent="
+                  (ev) => {
+                    if (typeof ev.detail.value === 'string') {
+                      searchTerm = '';
+                      modelValue.push(ev.detail.value);
+                    }
 
-                  if (filteredFrameworks.length === 0) {
-                    open = false
+                    if (filteredItems.length === 0) {
+                      open = false;
+                    }
                   }
-                }"
+                "
               >
-                {{ framework.label }}
+                {{ item.label }}
               </CommandItem>
             </CommandGroup>
           </CommandList>

@@ -17,6 +17,32 @@ import { Check, Circle, Dot } from 'lucide-vue-next'
 import { h, ref } from 'vue'
 import * as z from 'zod'
 
+const genres = [
+  {
+    value: 'Thần thoại',
+    label: 'Thần thoại',
+  },
+  {
+    value: 'Huyền huyễn',
+    label: 'Huyền huyễn',
+  },
+  {
+    value: 'Khoa học viễn tưởng',
+    label: 'Khoa học viễn tưởng',
+  },
+  {
+    value: 'Tu tiên',
+    label: 'Tu tiên',
+  },
+  {
+    value: 'Ngôn tình',
+    label: 'Ngôn tình',
+  },
+  {
+    value: 'Cổ tích',
+    label: 'Cổ tích',
+  }
+]
 const formSchema = [
   z.object({
     fullName: z.string(),
@@ -35,7 +61,7 @@ const formSchema = [
     },
   ),
   z.object({
-    favoriteGenre: z.union([z.literal('coffee'), z.literal('tea'), z.literal('soda')]),
+    favoriteGenre: z.union(genres.map((genre) => z.literal(genre))),
   }),
 ]
 
@@ -53,8 +79,8 @@ const steps = [
   },
   {
     step: 3,
-    title: 'Your Favorite Drink',
-    description: 'Choose a drink',
+    title: 'Your Favorite Genre',
+    description: 'Choose a genre',
   },
 ]
 
@@ -65,7 +91,6 @@ function onSubmit(values: any) {
   })
 }
 
-const genres = ['Fantasy', 'Science Fiction', 'Horror', 'Romance', 'Mystery', 'Thriller', 'Western', 'Dystopian', 'Memoir', 'Biography', 'Self-help', 'Cookbook', 'History', 'Travel', 'Guide', 'Science', 'Math', 'Poetry', 'Art', 'Graphic Novel', 'Other']
 </script>
 
 <template>
