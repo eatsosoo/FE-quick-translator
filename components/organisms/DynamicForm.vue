@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
 import type { FormDataType, RowType } from "~/utils/types/form";
-
-import { Button } from "@/components/ui/button";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -13,16 +10,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Password } from "@/components/ui/password";
-import { toast } from "@/components/ui/toast";
-
-import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { h } from "vue";
-import * as z from "zod";
 
 const props = defineProps({
   data: Object as PropType<FormDataType>,
 });
+const emits = defineEmits(["submit"]);
 
 const formSchema = props.data?.structure.validate
 
@@ -30,15 +23,8 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = handleSubmit((values) => {
-  toast({
-    title: "You submitted the following values:",
-    description: h(
-      "pre",
-      { class: "mt-2 w-[340px] rounded-md bg-slate-950 p-4" },
-      h("code", { class: "text-white" }, JSON.stringify(values, null, 2))
-    ),
-  });
+const onSubmit = handleSubmit((values) => {  
+  emits("submit", values);
 });
 
 const components: Record<RowType, any> = {
@@ -48,9 +34,10 @@ const components: Record<RowType, any> = {
 </script>
 
 <template>
-  <form @submit="onSubmit">
+  <form @submit.prevent="onSubmit">
     <FormField
       v-for="row in data?.structure.rows"
+      :key="row.name"
       v-slot="{ componentField }"
       :name="row.name"
     >

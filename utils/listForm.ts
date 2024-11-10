@@ -6,14 +6,14 @@ export const $listForm: { [key: string]: FormDataType } = {
   login: {
     states: {
       apiErrors: {
-        email: "",
+        username: "",
         password: "",
       },
       loading: {
         submit: false,
       },
       values: {
-        email: "",
+        username: "",
         password: "",
       },
     },
@@ -22,8 +22,8 @@ export const $listForm: { [key: string]: FormDataType } = {
       rows: [
         {
           rowType: RowTypeEnum.text,
-          label: "Email",
-          name: "email",
+          label: "Username",
+          name: "username",
         },
         {
           rowType: RowTypeEnum.password,
@@ -33,7 +33,7 @@ export const $listForm: { [key: string]: FormDataType } = {
       ],
       validate: toTypedSchema(
         z.object({
-          email: z.string().email(),
+          username: z.string(),
           password: z.string().min(6),
         })
       ),

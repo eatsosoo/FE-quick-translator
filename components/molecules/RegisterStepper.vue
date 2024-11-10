@@ -2,47 +2,21 @@
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Stepper, StepperDescription, StepperItem, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper'
 import { toast } from '@/components/ui/toast'
 import { toTypedSchema } from '@vee-validate/zod'
 import { Check, Circle, Dot } from 'lucide-vue-next'
 import { h, ref } from 'vue'
 import * as z from 'zod'
+import type { GenresType } from '~/utils/types/response'
 
-const genres = [
-  {
-    value: 'Thần thoại',
-    label: 'Thần thoại',
+const props = defineProps({
+  genres: {
+    type: Array as PropType<{ value: number, label: string}[]>,
+    required: true,
   },
-  {
-    value: 'Huyền huyễn',
-    label: 'Huyền huyễn',
-  },
-  {
-    value: 'Khoa học viễn tưởng',
-    label: 'Khoa học viễn tưởng',
-  },
-  {
-    value: 'Tu tiên',
-    label: 'Tu tiên',
-  },
-  {
-    value: 'Ngôn tình',
-    label: 'Ngôn tình',
-  },
-  {
-    value: 'Cổ tích',
-    label: 'Cổ tích',
-  }
-]
+})
+
 const formSchema = [
   z.object({
     fullName: z.string(),
@@ -61,7 +35,7 @@ const formSchema = [
     },
   ),
   z.object({
-    favoriteGenre: z.union(genres.map((genre) => z.literal(genre))),
+    favoriteGenre: z.union(props.genres.map((genre) => z.literal(genre))),
   }),
 ]
 

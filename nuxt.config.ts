@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      OPENAI_API_KEY: process.env.NUXT_OPENAI_API_KEY ?? '',
+      apiBase: process.env.NUXT_API ?? '',
     },
   },
   compatibilityDate: '2024-04-03',

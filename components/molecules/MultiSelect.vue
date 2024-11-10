@@ -23,7 +23,7 @@ import { computed, ref } from "vue";
 
 const props = defineProps({
   options: {
-    type: Array as PropType<{ value: string; label: string }[]>,
+    type: Array as PropType<{ value: string | number; label: string }[]>,
     required: true,
   },
   placeholder: {

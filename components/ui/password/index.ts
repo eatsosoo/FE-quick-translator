@@ -1,1 +1,1 @@
-export { default as Password } from './Input.vue'
+export { default as Password } from './password.vue'
