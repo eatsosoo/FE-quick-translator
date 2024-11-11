@@ -65,16 +65,16 @@ const methods = {
     loginForm.states.loading.submit = false;
   },
   getListGenres: async () => {
-    const { data } = await useFetch<{
-      data: ResponseDataType;
-    }>(`${apiBase}/genres`);
+    const { statusCode, data }: ResponseDataType = await axiosInstance.get('/genres')
 
-    if (data.value?.data) {
-      genres.value = data.value.data.map((genre: GenresType) => ({
+    if (statusCode === 200) {
+      genres.value = data.map((genre: GenresType) => ({
         value: genre.id,
         label: genre.name,
       }));
     }
+
+    console.log(genres.value);
   },
 };
 
@@ -113,7 +113,7 @@ methods.getListGenres();
         <CardTitle>{{ text.title }}</CardTitle>
         <CardDescription>Welcome to Nàng Kiếm Chàng Hoa</CardDescription>
       </CardHeader>
-      <CardContent :class="{ 'w-[40rem]': !isLogin }">
+      <CardContent :class="{ 'w-[60rem]': !isLogin }">
         <LoginForm v-if="isLogin" />
         <RegisterForm v-else />
       </CardContent>

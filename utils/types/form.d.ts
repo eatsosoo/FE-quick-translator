@@ -27,3 +27,12 @@ export type FormRowType = {
 }
 
 export type RowType = 'text' | 'password';
+
+export type RegisterFormType = {
+    user_name: string;
+    name: string;
+    email: string;
+    code: string;
+    password: string;
+    confirm_password: string;
+}

@@ -1,88 +1,197 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Stepper, StepperDescription, StepperItem, StepperSeparator, StepperTitle, StepperTrigger } from '@/components/ui/stepper'
-import { toast } from '@/components/ui/toast'
-import { toTypedSchema } from '@vee-validate/zod'
-import { Check, Circle, Dot } from 'lucide-vue-next'
-import { h, ref } from 'vue'
-import * as z from 'zod'
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Stepper,
+  StepperDescription,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+  StepperTrigger,
+} from "@/components/ui/stepper";
+import {
+  PinInput,
+  PinInputGroup,
+  PinInputInput,
+} from "@/components/ui/pin-input";
+import { toast } from "@/components/ui/toast";
+import { toTypedSchema } from "@vee-validate/zod";
+import { Check, Circle, Dot } from "lucide-vue-next";
+import { h, ref } from "vue";
+import * as z from "zod";
+import { type GenericObject } from "vee-validate";
+import type { ResponseDataType } from "~/utils/types/response";
+import axiosInstance from "~/config/axios";
+import type { AxiosError } from "axios";
 
 const props = defineProps({
   genres: {
-    type: Array as PropType<{ value: number, label: string}[]>,
+    type: Array as PropType<{ value: number; label: string }[]>,
     required: true,
   },
-})
+});
 
-const emits = defineEmits(['switchForm'])
+const emits = defineEmits(["switchForm", "submit"]);
 
 const formSchema = [
   z.object({
-    fullName: z.string(),
+    name: z.string(),
     email: z.string().email(),
+    user_name: z
+      .string()
+      .min(8)
+      .max(50)
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username must not contain spaces or special characters"
+      ),
+  }),
+  z
+    .object({
+      password: z.string().min(8).max(50),
+      password_confirmation: z.string().min(8).max(50),
+    })
+    .refine(
+      (values) => {
+        return values.password === values.password_confirmation;
+      },
+      {
+        message: "Passwords must match!",
+        path: ["confirmPassword"],
+      }
+    ),
+  z.object({
+    // favoriteGenre: z.union([
+    //   z.literal(1),
+    //   z.literal(2),
+    //   z.literal(3),
+    //   z.literal(4),
+    //   z.literal(5),
+    //   z.literal(6),
+    //   z.literal(7),
+    //   z.literal(8),
+    //   z.literal(9),
+    // ]),
+    favorite_genre: z.string(),
   }),
   z.object({
-    password: z.string().min(2).max(50),
-    confirmPassword: z.string(),
-  }).refine(
-    (values) => {
-      return values.password === values.confirmPassword
-    },
-    {
-      message: 'Passwords must match!',
-      path: ['confirmPassword'],
-    },
-  ),
-  z.object({
-    favoriteGenre: z.union(props.genres.map((genre) => z.literal(genre.value))),
+    code: z.array(z.coerce.string()).length(6, { message: "Invalid input" }),
   }),
-]
+];
 
-const stepIndex = ref(1)
+const countdown = ref(0);
+const stepIndex = ref(1);
 const steps = [
   {
     step: 1,
-    title: 'Your details',
-    description: 'Provide your name and email',
+    title: "Your details",
+    description: "Provide your name and email",
   },
   {
     step: 2,
-    title: 'Your password',
-    description: 'Choose a password',
+    title: "Your password",
+    description: "Choose a password",
   },
   {
     step: 3,
-    title: 'Your Favorite Genre',
-    description: 'Choose a genre',
+    title: "Your Favorite Genre",
+    description: "Choose a genre",
   },
-]
+  {
+    step: 4,
+    title: "Confirm Email",
+    description: "Send you an email",
+  },
+];
 
-function onSubmit(values: any) {
-  toast({
-    title: 'You submitted the following values:',
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
-}
+const startCountdown = () => {
+  countdown.value = 60;
+  const interval = setInterval(() => {
+    countdown.value -= 1;
+    if (countdown.value === 0) {
+      clearInterval(interval);
+    }
+  }, 1000);
+};
 
+const sendConfirmationEmail = async (values: GenericObject) => {
+  startCountdown();
+  try {
+    const { statusCode }: ResponseDataType = await axiosInstance.post(
+      "/verify-email",
+      { email: values.email }
+    );
+    if (statusCode === 200) {
+      toast({
+        title: "Email Sent",
+        description: "We have sent a 6-digit code to your email address",
+      });
+    }
+  } catch (error) {
+    const err = error as AxiosError;
+    const description = (err.response?.data as { message: string })?.message;
+    toast({
+      title: "Email Sent Failed",
+      description,
+    });
+  }
+};
+
+const onSubmit = async (values: GenericObject) => {
+  try {
+    const { statusCode }: ResponseDataType = await axiosInstance.post(
+      "/register",
+      { ...values, code: values.code.join("") }
+    );
+    if (statusCode === 200) {
+      toast({
+        title: "Register Success",
+        description: "Welcome to our platform",
+      });
+      emits("switchForm");
+    }
+  } catch (error) {
+    const err = error as AxiosError;
+    const description = (err.response?.data as { message: string })?.message;
+    toast({
+      title: "Register Failed",
+      description,
+    });
+  }
+};
 </script>
 
 <template>
   <Form
-    v-slot="{ meta, values, validate }"
-    as="" keep-values :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
+    v-slot="{ meta, values, validate, setFieldValue }"
+    as=""
+    keep-values
+    :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
   >
-    <Stepper v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }" v-model="stepIndex" class="block w-full">
+    <Stepper
+      v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
+      v-model="stepIndex"
+      class="block w-full"
+    >
       <form
-        @submit="(e) => {
-          e.preventDefault()
-          validate()
+        @submit="
+          (e) => {
+            e.preventDefault();
+            validate();
 
-          if (stepIndex === steps.length && meta.valid) {
-            onSubmit(values)
+            if (stepIndex === steps.length && meta.valid) {
+              onSubmit(values);
+            }
           }
-        }"
+        "
       >
         <div class="flex w-full flex-start gap-2">
           <StepperItem
@@ -99,10 +208,17 @@ function onSubmit(values: any) {
 
             <StepperTrigger as-child>
               <Button
-                :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
+                :variant="
+                  state === 'completed' || state === 'active'
+                    ? 'default'
+                    : 'outline'
+                "
                 size="icon"
                 class="z-10 rounded-full shrink-0"
-                :class="[state === 'active' && 'ring-2 ring-ring ring-offset-2 ring-offset-background']"
+                :class="[
+                  state === 'active' &&
+                    'ring-2 ring-ring ring-offset-2 ring-offset-background',
+                ]"
                 :disabled="state !== 'completed' && !meta.valid"
               >
                 <Check v-if="state === 'completed'" class="size-5" />
@@ -130,9 +246,19 @@ function onSubmit(values: any) {
 
         <div class="flex flex-col gap-4 mt-4">
           <template v-if="stepIndex === 1">
-            <FormField v-slot="{ componentField }" name="fullName">
+            <FormField v-slot="{ componentField }" name="name">
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input type="text" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="user_name">
+              <FormItem>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input type="text" v-bind="componentField" />
                 </FormControl>
@@ -162,7 +288,7 @@ function onSubmit(values: any) {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="confirmPassword">
+            <FormField v-slot="{ componentField }" name="password_confirmation">
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
@@ -174,13 +300,59 @@ function onSubmit(values: any) {
           </template>
 
           <template v-if="stepIndex === 3">
-            <FormField v-slot="{ componentField }" name="favoriteGenre">
+            <FormField v-slot="{ componentField }" name="favorite_genre">
               <FormItem>
                 <FormLabel>Genre</FormLabel>
 
                 <FormControl>
-                  <MultiSelect v-bind="componentField" :options="genres" />
+                  <Input type="input" v-bind="componentField" />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+          </template>
+
+          <template v-if="stepIndex === 4">
+            <FormField v-slot="{ componentField, value }" name="code">
+              <FormItem>
+                <FormLabel>OTP</FormLabel>
+
+                <FormControl>
+                  <PinInput
+                    id="pin-input"
+                    :model-value="value"
+                    placeholder="○"
+                    class="flex gap-2 items-center mt-1"
+                    otp
+                    type="number"
+                    :name="componentField.name"
+                    @update:model-value="
+                      (arrStr) => {
+                        setFieldValue('code', arrStr.filter(Boolean));
+                      }
+                    "
+                  >
+                    <PinInputGroup>
+                      <PinInputInput
+                        v-for="(id, index) in 6"
+                        :key="id"
+                        :index="index"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        class="ml-2"
+                        type="button"
+                        :disabled="countdown !== 0"
+                        @click="sendConfirmationEmail(values)"
+                        >{{ countdown === 0 ? "Sent OTP" : countdown + 's' }}</Button
+                      >
+                    </PinInputGroup>
+                  </PinInput>
+                </FormControl>
+                <!-- <FormDescription>
+                  We have sent a 6-digit code to your email address
+                </FormDescription> -->
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -188,17 +360,33 @@ function onSubmit(values: any) {
         </div>
 
         <div class="flex items-center justify-between mt-4">
-          <Button v-if="stepIndex !== 1" :disabled="isPrevDisabled" variant="outline" size="sm" @click="prevStep()">
+          <Button
+            v-if="stepIndex !== 1"
+            :disabled="isPrevDisabled"
+            variant="outline"
+            size="sm"
+            @click="prevStep()"
+          >
             Back
           </Button>
-          <Button v-else variant="outline" size="sm" @click="emits('switchForm')">Back to SignIn</Button>
+          <Button
+            v-else
+            variant="outline"
+            size="sm"
+            @click="emits('switchForm')"
+            >Back to Sign In</Button
+          >
           <div class="flex items-center gap-3">
-            <Button v-if="stepIndex !== 3" :type="meta.valid ? 'button' : 'submit'" :disabled="isNextDisabled" size="sm" @click="meta.valid && nextStep()">
+            <Button
+              v-if="stepIndex !== 4"
+              :type="meta.valid ? 'button' : 'submit'"
+              :disabled="isNextDisabled"
+              size="sm"
+              @click="meta.valid && nextStep()"
+            >
               Next
             </Button>
-            <Button
-              v-if="stepIndex === 3" size="sm" type="submit"
-            >
+            <Button v-if="stepIndex === 4" size="sm" type="submit">
               Submit
             </Button>
           </div>
