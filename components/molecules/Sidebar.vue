@@ -20,8 +20,21 @@ const menus = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { name: 'Settings', icon: Settings, href: '/' },
   { name: 'Books', icon: BookType, href: '/' },
-  { name: 'Logout', icon: LogOut, href: '/logout' },
+  { name: 'Logout', icon: LogOut, href: '/login' },
 ]
+
+const logout = () => {
+  const authStore = useAuthStore();
+  authStore.clearToken();
+}
+
+const actions = (name: string) => {
+  console.log(name);
+  
+  if (name === 'Logout') {
+    logout()
+  }
+}
 </script>
 
 <template>
@@ -31,7 +44,7 @@ const menus = [
         <AlignJustify />
       </Button>
       <div v-for="menu in menus" :key="menu.name" class="flex justify-center hover:bg-slate-100 hover:rounded-sm">
-        <nuxt-link :href="menu.href" class="block p-2 my-2">
+        <nuxt-link :href="menu.href" class="block p-2 my-2" @click="actions(menu.name)">
             <component :is="menu.icon" />
         </nuxt-link>
       </div>
@@ -43,9 +56,9 @@ const menus = [
           <DrawerDescription>Quick translator</DrawerDescription>
         </DrawerHeader>
         <div v-for="menu in menus" :key="menu.name" class="hover:bg-slate-100 hover:rounded-sm mx-2">
-            <nuxt-link :href="menu.href" class="flex justify-start p-2 my-2">
-                <component :is="menu.icon" />
-                <p class="ml-4">{{ menu.name }}</p>
+            <nuxt-link :href="menu.href" class="flex justify-start p-2 my-2" @click="actions(menu.name)">
+              <component :is="menu.icon" />
+              <p class="ml-4">{{ menu.name }}</p>
             </nuxt-link>
         </div>
         <!-- <DrawerFooter>
