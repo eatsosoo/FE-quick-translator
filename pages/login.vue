@@ -15,8 +15,9 @@ import type { GenresType, ResponseDataType } from "~/utils/types/response";
 
 definePageMeta({
   title: "Login",
-  description: "Deploy your new project in one-click.",
+  description: "Welcome to Nàng Kiếm Chàng Hoa",
   layout: "empty",
+  middleware: 'auth',
 });
 
 const [UseLoginTemplate, LoginForm] = createReusableTemplate();
