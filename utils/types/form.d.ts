@@ -1,5 +1,3 @@
-import type { ZodRawShape, ZodString } from "zod";
-
 export type FormDataType = {
     states: FormStatesType;
     structure: FormStructuresType;

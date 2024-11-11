@@ -8,6 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createReusableTemplate } from "@vueuse/core";
+import { useToast } from '@/components/ui/toast/use-toast';
+import type { AxiosError } from "axios";
+import axiosInstance from "~/config/axios";
 import type { GenresType, ResponseDataType } from "~/utils/types/response";
 
 definePageMeta({
@@ -22,6 +25,7 @@ const [UseRegisterTemplate, RegisterForm] = createReusableTemplate();
 // --- Variables ---
 const router = useRouter();
 const config = useRuntimeConfig();
+const authStore = useAuthStore();
 const apiBase = config.public.apiBase;
 const isLogin = ref(true);
 const genres = ref([]);
@@ -31,6 +35,7 @@ const text = reactive({
   switch: "Sign Up",
 });
 const loginForm = reactive($listForm.login);
+const { toast } = useToast();
 
 // --- Methods ---
 const methods = {
@@ -42,29 +47,28 @@ const methods = {
   },
   login: async (values: { [x: string]: string }) => {
     loginForm.states.loading.submit = true;
-    const { data } = await useAsyncData(
-      "login",
-      () => {
-        return useFetch<{ data: ResponseDataType }>(`${apiBase}/login`, {
-          method: "POST",
-          body: JSON.stringify(values),
-        });
+    try {
+      const { statusCode, data }: ResponseDataType = await axiosInstance.post('/login', values)
+      if (statusCode === 200) {
+        authStore.setToken(data.token)
+        router.push('/')
       }
-    );
-    loginForm.states.loading.submit = false;
-
-    if (data.value?.statusCode !== 200) {
-      console.error("Error:", data.value.message);
-    } else {
-      router.push("/");
+    } catch (error) {
+      const err = error as AxiosError
+      const description = (err.response?.data as { message: string })?.message
+      toast({
+        title: 'SignIn Failed',
+        description,
+      });
     }
+    loginForm.states.loading.submit = false;
   },
   getListGenres: async () => {
     const { data } = await useFetch<{
       data: ResponseDataType;
     }>(`${apiBase}/genres`);
 
-    if (data.value && data.value.data) {
+    if (data.value?.data) {
       genres.value = data.value.data.map((genre: GenresType) => ({
         value: genre.id,
         label: genre.name,
@@ -85,11 +89,12 @@ methods.getListGenres();
         <div class="flex justify-between w-full mt-2">
           <Button
             type="submit"
+            size="sm"
             :disabled="loginForm.states.loading.submit"
             :loading="loginForm.states.loading.submit"
             >{{ text.action }}</Button
           >
-          <Button type="button" variant="outline" @click="methods.switchForm">
+          <Button type="button" size="sm" variant="outline" @click="methods.switchForm">
             {{ text.switch }}
           </Button>
         </div>
@@ -98,7 +103,7 @@ methods.getListGenres();
   </UseLoginTemplate>
 
   <UseRegisterTemplate>
-    <RegisterStepper :genres="genres" />
+    <RegisterStepper :genres="genres" @switchForm="methods.switchForm" />
   </UseRegisterTemplate>
 
   <div class="login-page h-screen flex justify-center items-center">

@@ -30,6 +30,7 @@ definePageMeta({
   description:
     "Highlight selected text in a textarea using Vue 3 Composition API",
   layout: "default",
+  middleware: 'auth',
 });
 import { ref } from "vue";
 

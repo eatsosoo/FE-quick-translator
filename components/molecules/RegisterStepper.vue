@@ -8,7 +8,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { Check, Circle, Dot } from 'lucide-vue-next'
 import { h, ref } from 'vue'
 import * as z from 'zod'
-import type { GenresType } from '~/utils/types/response'
 
 const props = defineProps({
   genres: {
@@ -16,6 +15,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emits = defineEmits(['switchForm'])
 
 const formSchema = [
   z.object({
@@ -35,7 +36,7 @@ const formSchema = [
     },
   ),
   z.object({
-    favoriteGenre: z.union(props.genres.map((genre) => z.literal(genre))),
+    favoriteGenre: z.union(props.genres.map((genre) => z.literal(genre.value))),
   }),
 ]
 
@@ -187,9 +188,10 @@ function onSubmit(values: any) {
         </div>
 
         <div class="flex items-center justify-between mt-4">
-          <Button :disabled="isPrevDisabled" variant="outline" size="sm" @click="prevStep()">
+          <Button v-if="stepIndex !== 1" :disabled="isPrevDisabled" variant="outline" size="sm" @click="prevStep()">
             Back
           </Button>
+          <Button v-else variant="outline" size="sm" @click="emits('switchForm')">Back to SignIn</Button>
           <div class="flex items-center gap-3">
             <Button v-if="stepIndex !== 3" :type="meta.valid ? 'button' : 'submit'" :disabled="isNextDisabled" size="sm" @click="meta.valid && nextStep()">
               Next
