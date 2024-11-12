@@ -18,6 +18,7 @@ definePageMeta({
   description: "Welcome to Nàng Kiếm Chàng Hoa",
   layout: "empty",
   middleware: 'auth',
+  ssr: false,
 });
 
 const [UseLoginTemplate, LoginForm] = createReusableTemplate();
@@ -25,9 +26,7 @@ const [UseRegisterTemplate, RegisterForm] = createReusableTemplate();
 
 // --- Variables ---
 const router = useRouter();
-const config = useRuntimeConfig();
 const authStore = useAuthStore();
-const apiBase = config.public.apiBase;
 const isLogin = ref(true);
 const genres = ref([]);
 const text = reactive({

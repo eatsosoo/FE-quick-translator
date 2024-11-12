@@ -31,6 +31,7 @@ import { type GenericObject } from "vee-validate";
 import type { ResponseDataType } from "~/utils/types/response";
 import axiosInstance from "~/config/axios";
 import type { AxiosError } from "axios";
+import auth from "~/middleware/auth";
 
 const props = defineProps({
   genres: {
@@ -69,21 +70,10 @@ const formSchema = [
       }
     ),
   z.object({
-    // favoriteGenre: z.union([
-    //   z.literal(1),
-    //   z.literal(2),
-    //   z.literal(3),
-    //   z.literal(4),
-    //   z.literal(5),
-    //   z.literal(6),
-    //   z.literal(7),
-    //   z.literal(8),
-    //   z.literal(9),
-    // ]),
-    favorite_genre: z.string(),
+    favorite_genre: z.array(z.string()).min(1),
   }),
   z.object({
-    code: z.array(z.coerce.string()).length(6, { message: "Invalid input" }),
+    code: z.array(z.coerce.string()).length(6, { message: "Invalid OTP" }),
   }),
 ];
 
@@ -111,6 +101,7 @@ const steps = [
     description: "Send you an email",
   },
 ];
+const loading = ref(false);
 
 const startCountdown = () => {
   countdown.value = 60;
@@ -147,7 +138,8 @@ const sendConfirmationEmail = async (values: GenericObject) => {
 
 const onSubmit = async (values: GenericObject) => {
   try {
-    const { statusCode }: ResponseDataType = await axiosInstance.post(
+    loading.value = true;
+    const { statusCode, data }: ResponseDataType = await axiosInstance.post(
       "/register",
       { ...values, code: values.code.join("") }
     );
@@ -156,7 +148,8 @@ const onSubmit = async (values: GenericObject) => {
         title: "Register Success",
         description: "Welcome to our platform",
       });
-      emits("switchForm");
+      useAuthStore().setToken(data.token);
+      useRouter().push("/");
     }
   } catch (error) {
     const err = error as AxiosError;
@@ -165,6 +158,14 @@ const onSubmit = async (values: GenericObject) => {
       title: "Register Failed",
       description,
     });
+  }
+  loading.value = false;
+};
+
+const nextStep = (values: GenericObject) => {
+  stepIndex.value += 1;
+  if (stepIndex.value === 4) {
+    sendConfirmationEmail(values);
   }
 };
 </script>
@@ -177,7 +178,7 @@ const onSubmit = async (values: GenericObject) => {
     :validation-schema="toTypedSchema(formSchema[stepIndex - 1])"
   >
     <Stepper
-      v-slot="{ isNextDisabled, isPrevDisabled, nextStep, prevStep }"
+      v-slot="{ isNextDisabled, isPrevDisabled, prevStep }"
       v-model="stepIndex"
       class="block w-full"
     >
@@ -300,12 +301,32 @@ const onSubmit = async (values: GenericObject) => {
           </template>
 
           <template v-if="stepIndex === 3">
-            <FormField v-slot="{ componentField }" name="favorite_genre">
+            <FormField v-slot="{ value }" name="favorite_genre">
               <FormItem>
                 <FormLabel>Genre</FormLabel>
 
                 <FormControl>
-                  <Input type="input" v-bind="componentField" />
+                  <TagsInput :model-value="value">
+                    <TagsInputItem
+                      v-for="item in value"
+                      :key="item"
+                      :value="item"
+                    >
+                      <TagsInputItemText />
+                      <TagsInputItemDelete />
+                    </TagsInputItem>
+                    <TagsInputInput placeholder="Genres..." readonly />
+                  </TagsInput>
+                  <div class="flex">
+                    <div
+                      v-for="option in props.genres"
+                      :key="option.value"
+                      class="py-0.5 px-2 text-sm rounded bg-secondary m-2 w-auto border hover:border-black hover:cursor-pointer"
+                      @click="setFieldValue('favorite_genre',  [option.label])"
+                    >
+                      {{ option.label }}
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -345,14 +366,17 @@ const onSubmit = async (values: GenericObject) => {
                         type="button"
                         :disabled="countdown !== 0"
                         @click="sendConfirmationEmail(values)"
-                        >{{ countdown === 0 ? "Sent OTP" : countdown + 's' }}</Button
+                        >{{
+                          countdown === 0 ? "Sent OTP" : countdown + "s"
+                        }}</Button
                       >
                     </PinInputGroup>
                   </PinInput>
                 </FormControl>
-                <!-- <FormDescription>
-                  We have sent a 6-digit code to your email address
-                </FormDescription> -->
+                <FormDescription>
+                  We have sent a 6-digit code to your email address. Please
+                  check your email
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -382,11 +406,11 @@ const onSubmit = async (values: GenericObject) => {
               :type="meta.valid ? 'button' : 'submit'"
               :disabled="isNextDisabled"
               size="sm"
-              @click="meta.valid && nextStep()"
+              @click="meta.valid && nextStep(values)"
             >
               Next
             </Button>
-            <Button v-if="stepIndex === 4" size="sm" type="submit">
+            <Button v-if="stepIndex === 4" size="sm" type="submit" :loading="loading" :disabled="loading">
               Submit
             </Button>
           </div>
