@@ -31,7 +31,6 @@ import { type GenericObject } from "vee-validate";
 import type { ResponseDataType } from "~/utils/types/response";
 import axiosInstance from "~/config/axios";
 import type { AxiosError } from "axios";
-import auth from "~/middleware/auth";
 
 const props = defineProps({
   genres: {
@@ -70,7 +69,7 @@ const formSchema = [
       }
     ),
   z.object({
-    favorite_genre: z.array(z.string()).min(1),
+    favorite_genre: z.array(z.string()).min(1, { message: "Please choose a genre"}),
   }),
   z.object({
     code: z.array(z.coerce.string()).length(6, { message: "Invalid OTP" }),
@@ -102,6 +101,7 @@ const steps = [
   },
 ];
 const loading = ref(false);
+const genresSelected = ref<string[]>([]);
 
 const startCountdown = () => {
   countdown.value = 60;
@@ -167,6 +167,15 @@ const nextStep = (values: GenericObject) => {
   if (stepIndex.value === 4) {
     sendConfirmationEmail(values);
   }
+};
+
+const selectGenres = (genre: string) => {
+  if (genresSelected.value.includes(genre)) {
+    genresSelected.value = genresSelected.value.filter((item) => item !== genre);
+  } else {
+    genresSelected.value.push(genre);
+  }
+  return genresSelected.value;
 };
 </script>
 
@@ -271,7 +280,7 @@ const nextStep = (values: GenericObject) => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email " v-bind="componentField" />
+                  <Input type="email" v-bind="componentField" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -306,7 +315,7 @@ const nextStep = (values: GenericObject) => {
                 <FormLabel>Genre</FormLabel>
 
                 <FormControl>
-                  <TagsInput :model-value="value">
+                  <!-- <TagsInput :model-value="value">
                     <TagsInputItem
                       v-for="item in value"
                       :key="item"
@@ -316,13 +325,15 @@ const nextStep = (values: GenericObject) => {
                       <TagsInputItemDelete />
                     </TagsInputItem>
                     <TagsInputInput placeholder="Genres..." readonly />
-                  </TagsInput>
+                  </TagsInput> -->
+
                   <div class="flex">
                     <div
                       v-for="option in props.genres"
                       :key="option.value"
-                      class="py-0.5 px-2 text-sm rounded bg-secondary m-2 w-auto border hover:border-black hover:cursor-pointer"
-                      @click="setFieldValue('favorite_genre',  [option.label])"
+                      class="py-0.5 px-2 text-sm rounded m-2 w-auto border hover:border-black hover:cursor-pointer"
+                      :class="genresSelected.includes(option.label) ? 'bg-primary text-white' : 'bg-secondary'"
+                      @click="setFieldValue('favorite_genre',  selectGenres(option.label))"
                     >
                       {{ option.label }}
                     </div>

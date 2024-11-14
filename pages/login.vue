@@ -14,7 +14,7 @@ import axiosInstance from "~/config/axios";
 import type { GenresType, ResponseDataType } from "~/utils/types/response";
 
 definePageMeta({
-  title: "Login",
+  title: "Log In",
   description: "Welcome to Nàng Kiếm Chàng Hoa",
   layout: "empty",
   middleware: 'auth',
@@ -30,8 +30,8 @@ const authStore = useAuthStore();
 const isLogin = ref(true);
 const genres = ref([]);
 const text = reactive({
-  title: "Login",
-  action: "Login",
+  title: "Log In",
+  action: "Sign In",
   switch: "Sign Up",
 });
 const loginForm = reactive($listForm.login);
@@ -41,8 +41,8 @@ const { toast } = useToast();
 const methods = {
   switchForm: () => {
     isLogin.value = !isLogin.value;
-    text.title = isLogin.value ? "Login" : "Register";
-    text.action = isLogin.value ? "Login" : "Register";
+    text.title = isLogin.value ? "Sign In" : "Register";
+    text.action = isLogin.value ? "Sign In" : "Register";
     text.switch = isLogin.value ? "Sign Up" : "Sign In";
   },
   login: async (values: { [x: string]: string }) => {

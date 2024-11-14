@@ -18,7 +18,7 @@ export const $listForm: { [key: string]: FormDataType } = {
       },
     },
     structure: {
-      title: "Login Form",
+      title: "Log In Form",
       rows: [
         {
           rowType: RowTypeEnum.text,
@@ -34,7 +34,7 @@ export const $listForm: { [key: string]: FormDataType } = {
       validate: toTypedSchema(
         z.object({
           username: z.string(),
-          password: z.string().min(6),
+          password: z.string().min(8),
         })
       ),
       bottomSlotName: "btnArea",
