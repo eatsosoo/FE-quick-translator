@@ -41,65 +41,10 @@ const props = defineProps({
 
 const emits = defineEmits(["switchForm", "submit"]);
 
-const formSchema = [
-  z.object({
-    name: z.string(),
-    email: z.string().email(),
-    user_name: z
-      .string()
-      .min(8)
-      .max(50)
-      .regex(
-        /^[a-zA-Z0-9_]+$/,
-        "Username must not contain spaces or special characters"
-      ),
-  }),
-  z
-    .object({
-      password: z.string().min(8).max(50),
-      password_confirmation: z.string().min(8).max(50),
-    })
-    .refine(
-      (values) => {
-        return values.password === values.password_confirmation;
-      },
-      {
-        message: "Passwords must match!",
-        path: ["confirmPassword"],
-      }
-    ),
-  z.object({
-    favorite_genre: z.array(z.string()).min(1, { message: "Please choose a genre"}),
-  }),
-  z.object({
-    code: z.array(z.coerce.string()).length(6, { message: "Invalid OTP" }),
-  }),
-];
-
+const formSchema = $schema.resgisterSchema;
+const steps = $constants.REGISTER_STEPS;
 const countdown = ref(0);
 const stepIndex = ref(1);
-const steps = [
-  {
-    step: 1,
-    title: "Your details",
-    description: "Provide your name and email",
-  },
-  {
-    step: 2,
-    title: "Your password",
-    description: "Choose a password",
-  },
-  {
-    step: 3,
-    title: "Your Favorite Genre",
-    description: "Choose a genre",
-  },
-  {
-    step: 4,
-    title: "Confirm Email",
-    description: "Send you an email",
-  },
-];
 const loading = ref(false);
 const genresSelected = ref<string[]>([]);
 

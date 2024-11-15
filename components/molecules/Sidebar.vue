@@ -4,6 +4,7 @@ import { LayoutDashboard } from 'lucide-vue-next';
 import { LogOut } from 'lucide-vue-next';
 import { Settings } from 'lucide-vue-next';
 import { BookType } from 'lucide-vue-next';
+import { UserPen } from 'lucide-vue-next';
 import {
   Drawer,
   DrawerClose,
@@ -20,6 +21,7 @@ const menus = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { name: 'Settings', icon: Settings, href: '/' },
   { name: 'Books', icon: BookType, href: '/' },
+  { name: 'Profile', icon: UserPen, href: '/' },
   { name: 'Logout', icon: LogOut, href: '/login' },
 ]
 

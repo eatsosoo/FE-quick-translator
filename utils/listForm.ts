@@ -21,12 +21,12 @@ export const $listForm: { [key: string]: FormDataType } = {
       title: "Log In Form",
       rows: [
         {
-          rowType: RowTypeEnum.text,
+          rowType: $enum.RowTypeEnum.text,
           label: "Username",
           name: "username",
         },
         {
-          rowType: RowTypeEnum.password,
+          rowType: $enum.RowTypeEnum.password,
           label: "Password",
           name: "password",
         },
