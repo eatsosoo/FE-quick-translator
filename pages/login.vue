@@ -11,7 +11,7 @@ import { createReusableTemplate } from "@vueuse/core";
 import { useToast } from '@/components/ui/toast/use-toast';
 import type { AxiosError } from "axios";
 import axiosInstance from "~/config/axios";
-import type { GenresType, ResponseDataType } from "~/utils/types/response";
+import type { GenresType, ResponseDataType } from "~/common/types/response";
 
 definePageMeta({
   title: "Log In",

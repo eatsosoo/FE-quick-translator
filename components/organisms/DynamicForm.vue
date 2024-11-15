@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
-import type { FormDataType, RowType } from "~/utils/types/form";
+import type { FormDataType, RowType } from "~/common/types/form";
 import {
   FormControl,
   FormField,

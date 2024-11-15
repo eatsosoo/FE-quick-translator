@@ -1,4 +1,4 @@
-import type { FormDataType } from "./types/form";
+import type { FormDataType } from "../common/types/form";
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
 

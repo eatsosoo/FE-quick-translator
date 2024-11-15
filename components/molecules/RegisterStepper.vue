@@ -28,7 +28,7 @@ import { Check, Circle, Dot } from "lucide-vue-next";
 import { h, ref } from "vue";
 import * as z from "zod";
 import { type GenericObject } from "vee-validate";
-import type { ResponseDataType } from "~/utils/types/response";
+import type { ResponseDataType } from "~/common/types/response";
 import axiosInstance from "~/config/axios";
 import type { AxiosError } from "axios";
 
