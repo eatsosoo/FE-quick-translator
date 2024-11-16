@@ -24,6 +24,8 @@ export type FormRowType = {
     label: string;
     name: string;
     placeholder?: string;
+    readonly?: boolean;
+    disabled?: boolean;
 }
 
 export type RowType = 'text' | 'password';

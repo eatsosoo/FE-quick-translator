@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/toast/use-toast';
 import type { AxiosError } from "axios";
 import axiosInstance from "~/config/axios";
 import type { GenresType, ResponseDataType } from "~/common/types/response";
+import { cloneDeep } from "lodash";
 
 definePageMeta({
   title: "Log In",
@@ -34,7 +35,7 @@ const text = reactive({
   action: "Sign In",
   switch: "Sign Up",
 });
-const loginForm = reactive($listForm.login);
+const loginForm = reactive(cloneDeep($listForm.login));
 const { toast } = useToast();
 
 // --- Methods ---

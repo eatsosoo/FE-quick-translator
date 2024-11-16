@@ -13,30 +13,34 @@ import { Password } from "@/components/ui/password";
 import { useForm } from "vee-validate";
 
 const props = defineProps({
-  data: Object as PropType<FormDataType>,
+  formData: {
+    type: Object as PropType<FormDataType>,
+    required: true,
+  },
+  
 });
 const emits = defineEmits(["submit"]);
 
-const formSchema = props.data?.structure.validate
+const formSchema = props.formData.structure.validate;
 
 const { handleSubmit } = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = handleSubmit((values) => {  
+const onSubmit = handleSubmit((values) => {
   emits("submit", values);
 });
 
 const components: Record<RowType, any> = {
   text: Input,
-  password: Password
-}
+  password: Password,
+};
 </script>
 
 <template>
   <form @submit.prevent="onSubmit">
     <FormField
-      v-for="row in data?.structure.rows"
+      v-for="row in formData.structure.rows"
       :key="row.name"
       v-slot="{ componentField }"
       :name="row.name"
@@ -44,14 +48,19 @@ const components: Record<RowType, any> = {
       <FormItem class="mb-4">
         <FormLabel>{{ row.label }}</FormLabel>
         <FormControl>
-          <component :is="components[row.rowType]" v-bind="componentField" />
+          <component
+            :is="components[row.rowType]"
+            v-bind="componentField"
+            :readonly="row.readonly"
+            :default-value="formData.states.values[row.name]"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
 
-    <template v-if="data?.structure.bottomSlotName">
-      <slot :name="data?.structure.bottomSlotName"></slot>
+    <template v-if="formData.structure.bottomSlotName">
+      <slot :name="formData.structure.bottomSlotName"></slot>
     </template>
   </form>
 </template>

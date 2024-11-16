@@ -21,7 +21,7 @@ const menus = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { name: 'Settings', icon: Settings, href: '/' },
   { name: 'Books', icon: BookType, href: '/' },
-  { name: 'Profile', icon: UserPen, href: '/' },
+  { name: 'Profile', icon: UserPen, href: '/user/profile' },
   { name: 'Logout', icon: LogOut, href: '/login' },
 ]
 

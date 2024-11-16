@@ -40,4 +40,48 @@ export const $listForm: { [key: string]: FormDataType } = {
       bottomSlotName: "btnArea",
     },
   },
+  profile: {
+    states: {
+      apiErrors: {
+      },
+      loading: {
+        submit: false,
+      },
+      values: {
+        full_name: "Test User",
+        email: "Test User",
+        user_name: "Test User",
+        favorite_genre: [],
+      },
+    },
+    structure: {
+      title: "",
+      rows: [
+        {
+          rowType: $enum.RowTypeEnum.text,
+          label: "Username",
+          name: "user_name",
+          readonly: true,
+        },
+        {
+          rowType: $enum.RowTypeEnum.text,
+          label: "Full name",
+          name: "full_name",
+        },
+        {
+          rowType: $enum.RowTypeEnum.text,
+          label: "Email",
+          name: "email",
+        },
+      ],
+      validate: toTypedSchema(
+        z.object({
+          full_name: z.string().max(50),
+          email: z.string().email(),
+          user_name: z.string(),
+          favorite_genre: z.array(z.string()),})
+      ),
+      bottomSlotName: "btnArea",
+    },
+  }
 };

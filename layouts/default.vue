@@ -5,7 +5,7 @@
         </div>
         <div class="p-2 border flex-1">
             <Navbar />
-            <div class="border shadow-sm p-2 rounded-md m-2">
+            <div class="p-2 m-2">
                 <slot />
             </div>
         </div>
