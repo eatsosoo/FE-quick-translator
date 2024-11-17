@@ -1,6 +1,6 @@
 export type FormDataType = {
     states: FormStatesType;
-    structure: FormStructuresType;
+    structures: FormStructuresType[];
 }
 
 export type FormStatesType = {
@@ -15,7 +15,6 @@ export type FormStructuresType = {
     topSlotName?: string;
     bottomSlotName?: string;
     rows?: FormRowType[];
-    validate: any;
     [key: string]: any;
 }
 
@@ -26,6 +25,7 @@ export type FormRowType = {
     placeholder?: string;
     readonly?: boolean;
     disabled?: boolean;
+    rules?: any;
 }
 
 export type RowType = 'text' | 'password';

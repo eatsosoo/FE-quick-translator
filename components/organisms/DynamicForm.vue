@@ -21,10 +21,15 @@ const props = defineProps({
 });
 const emits = defineEmits(["submit"]);
 
-const formSchema = props.formData.structure.validate;
+const schemas = props.formData.structures.reduce((acc, structure) => {
+  structure.rows?.forEach((row) => {
+    acc[row.name] = row.rules;
+  });
+  return acc;
+}, {});
 
 const { handleSubmit } = useForm({
-  validationSchema: formSchema,
+  validationSchema: schemas,
 });
 
 const onSubmit = handleSubmit((values) => {
@@ -39,28 +44,30 @@ const components: Record<RowType, any> = {
 
 <template>
   <form @submit.prevent="onSubmit">
-    <FormField
-      v-for="row in formData.structure.rows"
-      :key="row.name"
-      v-slot="{ componentField }"
-      :name="row.name"
-    >
-      <FormItem class="mb-4">
-        <FormLabel>{{ row.label }}</FormLabel>
-        <FormControl>
-          <component
-            :is="components[row.rowType]"
-            v-bind="componentField"
-            :readonly="row.readonly"
-            :default-value="formData.states.values[row.name]"
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <template v-if="formData.structure.bottomSlotName">
-      <slot :name="formData.structure.bottomSlotName"></slot>
-    </template>
+    <div v-for="structure in formData.structures">
+      <FormField
+        v-for="row in structure.rows"
+        :key="row.name"
+        v-slot="{ componentField }"
+        :name="row.name"
+      >
+        <FormItem class="mb-4">
+          <FormLabel>{{ row.label }}</FormLabel>
+          <FormControl>
+            <component
+              :is="components[row.rowType]"
+              v-bind="componentField"
+              :readonly="row.readonly"
+              :default-value="formData.states.values[row.name]"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+  
+      <template v-if="structure.bottomSlotName">
+        <slot :name="structure.bottomSlotName"></slot>
+      </template>
+    </div>
   </form>
 </template>
