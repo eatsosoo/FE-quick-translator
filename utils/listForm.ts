@@ -25,19 +25,15 @@ export const $listForm: { [key: string]: FormDataType } = {
             rowType: $enum.RowTypeEnum.text,
             label: "Username",
             name: "username",
+            rules: z.string().max(50),
           },
           {
             rowType: $enum.RowTypeEnum.password,
             label: "Password",
             name: "password",
+            rules: z.string().min(8)
           },
         ],
-        validate: toTypedSchema(
-          z.object({
-            username: z.string(),
-            password: z.string().min(8),
-          })
-        ),
         bottomSlotName: "btnArea",
       },
     ],

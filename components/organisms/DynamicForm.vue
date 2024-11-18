@@ -11,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Password } from "@/components/ui/password";
 import { useForm } from "vee-validate";
+import { z } from "zod";
+import { toTypedSchema } from "@vee-validate/zod";
 
 const props = defineProps({
   formData: {
@@ -21,7 +23,7 @@ const props = defineProps({
 });
 const emits = defineEmits(["submit"]);
 
-const schemas = props.formData.structures.reduce((acc, structure) => {
+const formSchema = props.formData.structures.reduce((acc, structure) => {
   structure.rows?.forEach((row) => {
     acc[row.name] = row.rules;
   });
@@ -29,7 +31,7 @@ const schemas = props.formData.structures.reduce((acc, structure) => {
 }, {});
 
 const { handleSubmit } = useForm({
-  validationSchema: schemas,
+  validationSchema: toTypedSchema(z.object(formSchema)),
 });
 
 const onSubmit = handleSubmit((values) => {
