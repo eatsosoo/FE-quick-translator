@@ -84,7 +84,7 @@ methods.getListGenres();
 
 <template>
   <UseLoginTemplate>
-    <DynamicForm v-if="isLogin" :data="loginForm" @submit="methods.login">
+    <DynamicForm v-if="isLogin" :form-data="loginForm" @submit="methods.login">
       <template #btnArea>
         <p class="text-sm hover:underline cursor-pointer">Forgot password?</p>
         <div class="flex justify-between w-full mt-2">

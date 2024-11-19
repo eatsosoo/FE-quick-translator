@@ -47,25 +47,27 @@ const components: Record<RowType, any> = {
 <template>
   <form @submit.prevent="onSubmit">
     <div v-for="structure in formData.structures">
-      <FormField
-        v-for="row in structure.rows"
-        :key="row.name"
-        v-slot="{ componentField }"
-        :name="row.name"
-      >
-        <FormItem class="mb-4">
-          <FormLabel>{{ row.label }}</FormLabel>
-          <FormControl>
-            <component
-              :is="components[row.rowType]"
-              v-bind="componentField"
-              :readonly="row.readonly"
-              :default-value="formData.states.values[row.name]"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
+      <div :class="structure.style">
+        <FormField
+          v-for="row in structure.rows"
+          :key="row.name"
+          v-slot="{ componentField }"
+          :name="row.name"
+        >
+          <FormItem class="mb-4">
+            <FormLabel>{{ row.label }}</FormLabel>
+            <FormControl>
+              <component
+                :is="components[row.rowType]"
+                v-bind="componentField"
+                :readonly="row.readonly"
+                :default-value="formData.states.values[row.name]"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
   
       <template v-if="structure.bottomSlotName">
         <slot :name="structure.bottomSlotName"></slot>
