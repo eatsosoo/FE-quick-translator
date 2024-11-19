@@ -20,7 +20,7 @@
     </div>
 
     <p>Selected text: "{{ selectedText }}"</p>
-    <!-- <Button @click="translate" class="mb-2">Translate</Button> -->
+     <RichTextEditor v-model="comment" />
   </div>
 </template>
 
@@ -33,11 +33,13 @@ definePageMeta({
   middleware: 'auth',
 });
 import { ref } from "vue";
+import RichTextEditor from "~/components/molecules/CommentEditor.vue";
 
 const text = ref("");
 const translateText = ref("");
 const selectedText = ref("");
 const textAreaRef = ref<any>(null);
+const comment = ref("");
 
 const getSelection = () => {
   const textarea = textAreaRef.value;
