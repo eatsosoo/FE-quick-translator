@@ -20,7 +20,11 @@
     </div>
 
     <p>Selected text: "{{ selectedText }}"</p>
-     <RichTextEditor v-model="comment" />
+    <!-- <RichTextEditor v-model="comment" /> -->
+    <br>
+    <ClientOnly>
+      <TaptipEditor v-model="comment" />
+    </ClientOnly>
   </div>
 </template>
 
