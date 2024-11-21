@@ -1,7 +1,7 @@
 <template>
   <div v-if="editor">
     <div class="control-group">
-      <div class="button-group">
+      <div class="button-group flex items-center space-x-2">
         <Button
           @click="editor.chain().focus().toggleBold().run()"
           :disabled="!editor.can().chain().focus().toggleBold().run()"
@@ -12,13 +12,13 @@
         </Button>
          <Button
           @click="editor.chain().focus().toggleItalic().run()"
-          class="ml-1"
           :disabled="!editor.can().chain().focus().toggleItalic().run()"
           :class="{ 'is-active': editor.isActive('italic') }"
           size="xs"
         >
           Italic
         </Button>
+        <Gifs @select="addImage($event)"></Gifs>
         <!-- <button
           @click="editor.chain().focus().toggleStrike().run()"
           :disabled="!editor.can().chain().focus().toggleStrike().run()"
@@ -139,6 +139,10 @@ const editor = new Editor({
   ],
   content: "",
 });
+
+const addImage = (url: string) => {
+  editor.chain().focus().setImage({ src: url }).run();
+};
 
 onBeforeUnmount(() => {
   editor.destroy();

@@ -19,7 +19,6 @@ const props = defineProps({
     type: Object as PropType<FormDataType>,
     required: true,
   },
-  
 });
 const emits = defineEmits(["submit"]);
 

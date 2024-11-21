@@ -6,7 +6,7 @@
         <textarea
           v-model="text"
           ref="textAreaRef"
-          class="border p-2 w-full"
+          class="border p-2 w-full h-[150px]"
           @mouseup="getSelection"
           @input="translateText = text"
         ></textarea>
@@ -53,11 +53,6 @@ const getSelection = () => {
   selectedText.value = textarea.value.substring(start, end);
 };
 
-const translate = async () => {
-  const response = await sendMessageToChatGPT(selectedText.value);
-  translateText.value = response;
-};
-
 const highlightedText = computed(() => {
   if (!selectedText.value) {
     return translateText.value;
@@ -66,9 +61,3 @@ const highlightedText = computed(() => {
   return translateText.value.replace(regex, "<mark>$1</mark>");
 });
 </script>
-
-<style scoped lang="scss">
-textarea {
-  height: 150px;
-}
-</style>
