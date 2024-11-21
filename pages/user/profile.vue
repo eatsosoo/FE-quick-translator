@@ -46,21 +46,20 @@ const submitProfile = () => {
 
     <div class="">
       <h3 class="capitalize px-5 py-5 text-lg border-b-[1px]">edit your personal settings</h3>
-      <div class="py-4 px-8">
-          <DynamicForm :form-data="profileForm" @submit="submitProfile">
-            <template #btnArea>
-              <div class="flex justify-center mt-2">
-                <Button
-                  type="submit"
-                  size="sm"
-                  :disabled="profileForm.states.loading.submit"
-                  :loading="profileForm.states.loading.submit"
-                  >Update Information</Button
-                >
-              </div>
-            </template>
-          </DynamicForm>
-      </div>
+      <DynamicForm :form-data="profileForm" @submit="submitProfile">
+        <template #btnArea3>
+          <Policy @checked="console.log($event)" class="px-4 md:px-8 py-4" />
+          <div class="flex justify-center my-4">
+            <Button
+              type="submit"
+              size="sm"
+              :disabled="profileForm.states.loading.submit"
+              :loading="profileForm.states.loading.submit"
+              >Update Information</Button
+            >
+          </div>
+        </template>
+      </DynamicForm>
     </div>
 
     <div></div>

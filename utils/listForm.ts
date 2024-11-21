@@ -1,6 +1,5 @@
 import type { FormDataType } from "../common/types/form";
 import * as z from "zod";
-import { toTypedSchema } from "@vee-validate/zod";
 
 export const $listForm: { [key: string]: FormDataType } = {
   login: {
@@ -25,19 +24,15 @@ export const $listForm: { [key: string]: FormDataType } = {
             rowType: $enum.RowTypeEnum.text,
             label: "Username",
             name: "username",
+            rules: z.string().max(50),
           },
           {
             rowType: $enum.RowTypeEnum.password,
             label: "Password",
             name: "password",
+            rules: z.string().min(8)
           },
         ],
-        validate: toTypedSchema(
-          z.object({
-            username: z.string(),
-            password: z.string().min(8),
-          })
-        ),
         bottomSlotName: "btnArea",
       },
     ],
@@ -63,6 +58,7 @@ export const $listForm: { [key: string]: FormDataType } = {
     structures: [
       {
         title: "",
+        style: "border-b border-gray-200 px-4 md:px-8 py-4",
         rows: [
           {
             rowType: $enum.RowTypeEnum.text,
@@ -88,6 +84,32 @@ export const $listForm: { [key: string]: FormDataType } = {
       },
       {
         title: "",
+        style: "grid grid-cols-3 gap-4 border-b border-gray-200 px-4 md:px-8 py-4",
+        rows: [
+          {
+            rowType: $enum.RowTypeEnum.text,
+            label: "Day",
+            name: "day",
+            rules: z.string().max(2),
+          },
+          {
+            rowType: $enum.RowTypeEnum.text,
+            label: "Month",
+            name: "month",
+            rules: z.number().max(2),
+          },
+          {
+            rowType: $enum.RowTypeEnum.text,
+            label: "Year",
+            name: "year",
+            rules: z.number().max(4),
+          },
+        ],
+        bottomSlotName: "btnArea2",
+      },
+      {
+        title: "",
+        style: "grid grid-cols-2 gap-4 border-b border-gray-200 px-4 md:px-8 py-4",
         rows: [
           {
             rowType: $enum.RowTypeEnum.text,
@@ -115,7 +137,7 @@ export const $listForm: { [key: string]: FormDataType } = {
             rules: z.string().max(10).min(10),
           },
         ],
-        bottomSlotName: "btnArea2",
+        bottomSlotName: "btnArea3",
       },
     ],
   },
