@@ -1,4 +1,4 @@
-import { useEventListener } from '@/composable/useEventListener'
+import { useEventListener } from '@/composables/useEventListener'
 
 export function useOnClickOutside(rootElement: Ref<HTMLElement | null>, callback: () => any) {
   // `mousedown` or `mouseup` is better than `click` here because it doesn't PROPAGATION like `click`

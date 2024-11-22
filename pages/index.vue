@@ -20,7 +20,6 @@
     </div>
 
     <p>Selected text: "{{ selectedText }}"</p>
-    <!-- <RichTextEditor v-model="comment" /> -->
     <br>
     <ClientOnly>
       <TaptipEditor v-model="comment" />
@@ -35,9 +34,9 @@ definePageMeta({
     "Highlight selected text in a textarea using Vue 3 Composition API",
   layout: "default",
   middleware: 'auth',
+  ssr: false,
 });
 import { ref } from "vue";
-import RichTextEditor from "~/components/molecules/CommentEditor.vue";
 
 const text = ref("");
 const translateText = ref("");

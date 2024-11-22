@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div ref="gifsRef" class="relative">
       <div v-for="toolbar in toolbars" :key="toolbar.name">
         <img
           :src="toolbar.present"
@@ -20,14 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 
-const editor = ref<HTMLElement | null>(null);
 const showGifList = ref(false);
 const gifsAll = ref<{[key: string]: string[]}>({});
 const currentGifs = ref<string[]>([]);
 const toolbars = ref<{ name: string, present: string}[]>([]);
-
+const gifsRef = ref<HTMLElement | null>(null);
 const emits = defineEmits(["select"]);
 
 const fetchOrigins = async () => {
@@ -53,6 +52,10 @@ const toggleGifList = async (key: string) => {
 const selectGif = (gifUrl: string ) => {
   emits("select", gifUrl);
 };
+
+useOnClickOutside(gifsRef, () => {
+  showGifList.value = false;
+});
 
 fetchOrigins();
 </script>
