@@ -6,17 +6,19 @@
           @click="editor.chain().focus().toggleBold().run()"
           :disabled="!editor.can().chain().focus().toggleBold().run()"
           :class="{ 'is-active': editor.isActive('bold') }"
-          size="xs"
+          variant="outline"
+          size="sm"
         >
-          Bold
+          <Bold :size="20" :strokeWidth="3" />
         </Button>
          <Button
           @click="editor.chain().focus().toggleItalic().run()"
           :disabled="!editor.can().chain().focus().toggleItalic().run()"
           :class="{ 'is-active': editor.isActive('italic') }"
-          size="xs"
+          variant="outline"
+          size="sm"
         >
-          Italic
+          <Italic :size="20" :strokeWidth="1" />
         </Button>
         <Gifs @select="addImage($event)"></Gifs>
       </div>
@@ -35,6 +37,8 @@ import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit";
 import Image from '@tiptap/extension-image';
 import { Editor, EditorContent } from "@tiptap/vue-3";
+import { Bold, Italic } from 'lucide-vue-next';
+
 
 const editor = new Editor({
   extensions: [
