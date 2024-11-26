@@ -1,9 +1,19 @@
 <template>
   <div class="wrap-wheel">
-    <div class="arrow-marker"></div>
-    <fieldset ref="luckyWheelRef" class="ui-wheel-of-fortune">
+    <div class="prize-marker"></div>
+    <fieldset
+      ref="luckyWheelRef"
+      class="ui-wheel-of-fortune"
+      :style="{ '--_items': prizes.length }"
+    >
       <ul>
-        <li v-for="prize in prizes" :key="prize">{{ prize }}</li>
+        <li
+          v-for="(prize, index) in prizes"
+          :key="prize"
+          :style="{ '--_idx': index + 1 }"
+        >
+          {{ prize }}
+        </li>
       </ul>
       <button type="button" @click="spinWheel">SPIN</button>
     </fieldset>
@@ -13,24 +23,32 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const props = defineProps({
+  prizes: {
+    type: Array as PropType<string[]>,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    default: 4000,
+  },
+});
+
+const emits = defineEmits(["finish"]);
+
 const luckyWheelRef = ref<HTMLElement | null>(null);
 const animation = ref<Animation | null>(null);
 const preEndDegree = ref<number>(0);
-const prizes = [
-  "$1000",
-  "$2000",
-  "$3000",
-  "$4000",
-  "$5000",
-  "$6000",
-  "$7000",
-  "$8000",
-  "$9000",
-  "$10000",
-  "$11000",
-  "$12000",
-];
-const numSegments = prizes.length;
+
+const getPrize = (newEndDegree: number, prizes: string[]) => {
+  const finalDegree = newEndDegree % 360;
+  const segmentAngle = 360 / prizes.length;
+  const adjustedDegree = (360 - finalDegree + 360) % 360;
+  const winningIndex = (adjustedDegree / segmentAngle) % prizes.length;
+  const winningPrize = prizes[customRoundNumber(winningIndex)];
+
+  return winningPrize;
+};
 
 const spinWheel = () => {
   if (animation.value) {
@@ -47,7 +65,7 @@ const spinWheel = () => {
         { transform: `rotate(${newEndDegree}deg)` },
       ],
       {
-        duration: 4000,
+        duration: props.duration,
         direction: "normal",
         easing: "cubic-bezier(0.440, -0.205, 0.000, 1.130)",
         fill: "forwards",
@@ -56,12 +74,9 @@ const spinWheel = () => {
     );
 
     animation.value.onfinish = () => {
-      const finalDegree = newEndDegree % 360;
-      const segmentAngle = 360 / numSegments;
-      const winningIndex =
-        Math.floor((360 - finalDegree) / segmentAngle) % numSegments;
-      const winningPrize = prizes[winningIndex];
-      alert(`You won: ${winningPrize}`);
+      const prize = getPrize(newEndDegree, props.prizes);
+      emits("finish", prize);
+      alert(`You won: ${prize}`);
     };
   }
   preEndDegree.value = newEndDegree;
@@ -70,28 +85,29 @@ const spinWheel = () => {
 
 <style lang="scss">
 .wrap-wheel {
-    position: relative;
-    
-  .arrow-marker {
+  position: relative;
+  background-color: tomato;
+
+  .prize-marker {
     position: absolute;
     top: 50%; /* Adjust as needed */
-    left: -1px;
-    transform: translateX(-50%);
+    left: -20px;
+    transform: translateY(-50%);
     width: 10px;
     height: 10px;
     border-bottom: 10px solid transparent;
     border-top: 10px solid transparent;
-    border-left: 20px solid red; /* Arrow color */
+    border-left: 20px solid red; /* prize color */
   }
   :where(.ui-wheel-of-fortune) {
-    --_items: 12;
     all: unset;
     aspect-ratio: 1 / 1;
     container-type: inline-size;
     direction: ltr;
     display: grid;
     position: relative;
-    width: 100%;
+    border: 0.5rem solid white;
+    border-radius: 50%;
 
     & > * {
       position: absolute;
@@ -132,43 +148,6 @@ const spinWheel = () => {
         transform-origin: center right;
         user-select: none;
         width: 50cqi;
-
-        &:nth-of-type(1) {
-          --_idx: 1;
-        }
-        &:nth-of-type(2) {
-          --_idx: 2;
-        }
-        &:nth-of-type(3) {
-          --_idx: 3;
-        }
-        &:nth-of-type(4) {
-          --_idx: 4;
-        }
-        &:nth-of-type(5) {
-          --_idx: 5;
-        }
-        &:nth-of-type(6) {
-          --_idx: 6;
-        }
-        &:nth-of-type(7) {
-          --_idx: 7;
-        }
-        &:nth-of-type(8) {
-          --_idx: 8;
-        }
-        &:nth-of-type(9) {
-          --_idx: 9;
-        }
-        &:nth-of-type(10) {
-          --_idx: 10;
-        }
-        &:nth-of-type(11) {
-          --_idx: 11;
-        }
-        &:nth-of-type(12) {
-          --_idx: 12;
-        }
       }
     }
   }

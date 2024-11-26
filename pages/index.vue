@@ -21,9 +21,12 @@
 
     <p>Selected text: "{{ selectedText }}"</p>
     <br>
-    <ClientOnly>
+    <!-- <ClientOnly>
       <TaptipEditor v-model="comment" />
-    </ClientOnly>
+    </ClientOnly> -->
+    <div class="w-96">
+      <LuckyWheel :prizes="['1000', '2000', '500', '300', '800']" />
+    </div>
   </div>
 </template>
 
